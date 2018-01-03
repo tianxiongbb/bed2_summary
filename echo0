@@ -1,0 +1,20 @@
+#!/bin/bash
+
+usage(){
+	echo -e "\033[40;36;1musage:"
+	echo -e "\033[40;32;1m    echo0 format message"
+	echo -e "\033[40;32;1m    format> 0: \033[40;31;1merror\033[40;32;1m; 1: \033[40;36;1mtitle\033[40;32;1m; 2: \033[40;32mnormal text\033[40;32;1m; 3: \033[40;34;1;4mimportant text\033[0m\033[40;32;1m; 4: \033[40;33;1mwarning\033[0m"
+}
+if [ $# -lt 2 ];then
+	usage && exit 0
+fi
+
+case $1 in
+	0)	echo -e "\033[40;31;1m"$2"\033[0m";;
+	1)	echo -e "\033[40;36;1m"$2"\033[0m";;
+	2)	DATE=`date --date="-24 hour"` && echo -e "\033[40;32m"$2"\t$DATE\033[0m";;
+	3)	echo -e "\033[40;34;1;4m"$2"\033[0m";;
+	4)	echo -e "\033[40;33;1m"$2"\033[0m";;
+	*)	uasge && exit 1;;
+esac
+

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#help file
+if [ $# -lt 4 ];then
+	echo0 1 $0" in.piRNAcluster.bed2 in.transposon.bed2 in.hairpin.bed2 in.genome.bed2 out.prefix [CPU]"
+	exit 1
+fi
+
+#initialize parameters
+PATH_PROG=`dirname $0`
+PIRNA=$1
+TRANSPOSON=$2
+HAIRPIN=$3
+GENOME=$4
+PATH_OUT=`dirname $5`
+if [ $# -gt 5 ];then
+	CPU=$6
+else
+	CPU=1
+fi
+
+#calculate normlization factor
+FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}'`)
+
+#get summary
+get_piPipes_summary $1 ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes $5 ${FACTOR} ${CPU} picluster
+get_piPipes_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes $5 ${FACTOR} ${CPU} transposon
+bedtools intersect -a $4 -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > $5_temp_gene.bed2 
+get_piPipes_summary $5_temp_gene.bed2 ${PATH_PROG}/annotation/dm3/gene.sizes $5 ${FACTOR} ${CPU} gene
+
+#modify tables and plot
+modify_and_plot_summary.R $5.picluster
+modify_and_plot_summary.R $5.transposon
+modify_and_plot_summary.R $5.gene
