@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ $# -lt 2 ];then
+	echo0 1 $0" in.bed2 out.lendis [normalization_factor]"
+	exit 1
+fi
+if [ $# -gt 2 ];then
+	factor=$3
+else
+	factor=1
+fi
+
+awk -v factor=$factor 'BEGIN{FS=OFS="\t"} {if($6=="+"){l[length($7)]+=$4/$5}} END{for(i=15;i<=35;i++){print i,l[i]/factor}}' $1 > $2.1
+awk -v factor=$factor 'BEGIN{FS=OFS="\t"} {if($6=="-"){l[length($7)]+=$4/$5}} END{for(i=15;i<=35;i++){print i,l[i]/factor}}' $1 > $2.2
+paste $2.1 $2.2 | cut -f 1,2,4 > $2 && rm $2.1 $2.2
