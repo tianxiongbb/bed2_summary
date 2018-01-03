@@ -6,14 +6,14 @@ import bb_basic as bb
 
 def main():
     print_help()
-    dict_files = []
+    dict_files = {}
     dir_out = sys.argv[3].rstrip("/") + "/"
     for l in bb.fun_open_file(sys.argv[2], "r"):
         line = l.strip().split()
-        dict_files[line[1]] = bb.fun_open_file(dir_out+line[1]+".bed2", "w")
+        dict_files[line[0]] = bb.fun_open_file(dir_out+line[0]+".bed2", "w")
     for l in bb.fun_open_file(sys.argv[1], "r"):
         line = l.strip().split()
-        dict_files[line[3]].write(l)
+        dict_files[line[0]].write(l)
     for key in dict_files:
         dict_files[key].close()
 

@@ -17,20 +17,20 @@ PARA_FILE2=${3}_temp_para2
 PARA_FILE3=${3}_temp_para3
 PARA_FILE4=${3}_temp_para4
 seperate_bed2.py $1 $2 ${PATH_BED2}
-for i in ${PATH_BED2}
+for i in ${PATH_BED2}/*
 do
 	bn=`basename $i`
 	n=${bn%.bed2}
 	echo -e "bed2_lendis $i ${PATH_LENDIS}/${n}.lendis ${FACTOR}" >> ${PARA_FILE1}
-	echo -e "bed2_pingpong -a $i -b $i > ${PATH_PP}/${n}.pp ${FACTOR_PP}" >> ${PARA_FILE2}
-	echo -e "awk -v factor=$FACTOR 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1+=\$4/\$5}else if(\$6==\"-\" && \$5==1){sum2+=\$4/\$5}i;if(\$6==\"+\" &&){sum3+=\$4/\$5}else{sum4+=\$4/\$5}} END{print sum1/factor,sum2/factor,sum3/factor,sum4/factor}' $i > ${PATH_SIGNAL}/${n}.rpm" >> ${PARA_FILE3}
-	echo -e "awk -v 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1++}else if(\$6==\"-\" && \$5==1){sum2++};if(\$6==\"+\"){sum3++}else{sum4++}} END{print sum1/factor,sum2/factor,sum3/factor,sum4/factor}' $i > ${PATH_SIGNAL}/${n}.species" >> ${PARA_FILE4}
+	echo -e "bed2_pingpong -a $i -b $i | awk -v factor=${FACTOR_PP} 'BEGIN{FS=OFS=\"\\\t\"} {print \$1,\$2/factor}' > ${PATH_PP}/${n}.pp" >> ${PARA_FILE2}
+	echo -e "awk -v factor=$FACTOR 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1+=\$4/\$5}else if(\$6==\"-\" && \$5==1){sum2+=\$4/\$5};if(\$6==\"+\"){sum3+=\$4/\$5}else{sum4+=\$4/\$5}} END{print sum1/factor,sum2/factor,sum3/factor,sum4/factor}' $i > ${PATH_SIGNAL}/${n}.rpm" >> ${PARA_FILE3}
+	echo -e "awk 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1++}else if(\$6==\"-\" && \$5==1){sum2++};if(\$6==\"+\"){sum3++}else{sum4++}} END{print sum1,sum2,sum3,sum4}' $i > ${PATH_SIGNAL}/${n}.species" >> ${PARA_FILE4}
 done
 ParaFly -c ${PARA_FILE1} -CPU ${CPU} && rm ${PARA_FILE1}
 ParaFly -c ${PARA_FILE2} -CPU ${CPU} && rm ${PARA_FILE2}
 ParaFly -c ${PARA_FILE3} -CPU ${CPU} && rm ${PARA_FILE3}
 ParaFly -c ${PARA_FILE4} -CPU ${CPU} && rm ${PARA_FILE4}
-for i in ${PATH_BED2}
+for i in ${PATH_BED2}/*
 do
 	bn=`basename $i`
 	n=${bn%.bed2}
@@ -40,7 +40,7 @@ do
 	cut -f 2 ${PATH_PP}/${n}.pp > ${PATH_PP}/${n}.ppc 
 	rd=`cat ${PATH_SIGNAL}/${n}.rpm`
 	sp=`cat ${PATH_SIGNAL}/${n}.species`
-	echo -e "${n}\trd\tsp" >> ${3}_body4
+	echo -e "${n}\t${rd}\t${sp}" >> ${3}_body4
 done
 echo -e "name\tuniq_sense_reads\tuniq_antisense_reads\tall_sense_reads\tall_antisense_reads\tuniq_sense_species\tuniq_antisense_species]tall_sense_species\tall_antisense_species" > ${3}_header2
 echo -e "" >> ${3}_header1
