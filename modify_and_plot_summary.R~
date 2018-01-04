@@ -16,14 +16,14 @@ fun_zscore=function(x){
 	return(z)
 }
 fun_plot_lendis=function(x1, x2){
-	par(mar=c(1,3,1,2))
-	barplot(x1,space=0,border="white",col="#e41a1c",ylim=c(0,max(x1,x2)))
+	par(mar=c(1,1,1,2))
+	barplot(x1,space=0,border="white",col="#e41a1c",ylim=c(0,max(x1,x2)),yaxt="n")
 	axis(1,1:21,label=15:35,lwd=0,padj=-0.3)
 	text(0,max(x1,x2)*8/10,pos=4,font=2,label=paste("peak:\n",prettyNum(max(x1,x2),big.mark=","),sep=""))
-	barplot(-x2,space=0,border="white",col="#377eb8",ylim=c(-max(x1,x2),0))
+	barplot(-x2,space=0,border="white",col="#377eb8",ylim=c(-max(x1,x2),0),yaxt="n")
 }
 fun_plot_pp=function(x){
-	par(mar=c(4,3,4,1),cex=0.65)
+	par(mar=c(4,4,4,1),cex=0.65)
 	barplot(x,space=0,border="white",col="black")
 	axis(1,c(1,10,20,30)-0.5,label=c(1,10,20,30),lwd=0)
 	zs=round((x[10]-mean(x[c(1:9,11:30)]))/sd(x[c(1:9,11:30)]),2)
