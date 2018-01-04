@@ -3,6 +3,7 @@ get smallRNAseq summary in piclusters, transposons and genes from bed2 files gen
 ***
 ## installation
 For easy install, run install.sh in *bed2_summary* folder after download and unzip the source code. It will add all the scripts needed into your PATH and PYTHONPATH. After installation, please use `source ~/.bashrc` or re-load the server.
+After this, simple use `run_bed2_summary` to generate the summary of piPipes or mapping result.
 ***
 ## input
 *bed2_summary* need 5 input (6th is alternative):
