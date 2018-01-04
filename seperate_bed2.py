@@ -8,12 +8,27 @@ def main():
     print_help()
     dict_files = {}
     dir_out = sys.argv[3].rstrip("/") + "/"
+    # file open limited to 1024 in lunix, colse files when 800 files is read
+    ss = 1
     for l in bb.fun_open_file(sys.argv[2], "r"):
         line = l.strip().split()
         dict_files[line[0]] = bb.fun_open_file(dir_out+line[0]+".bed2", "w")
+        if ss%800 == 0:
+            for l in bb.fun_open_file(sys.argv[1], "r"):
+                line = l.strip().split()
+                try:
+                    dict_files[line[0]].write(l)
+                except:
+                    continue
+            for key in dict_files:
+                dict_files[key].close()
+        ss+=1
     for l in bb.fun_open_file(sys.argv[1], "r"):
         line = l.strip().split()
-        dict_files[line[0]].write(l)
+        try:
+            dict_files[line[0]].write(l)
+        except:
+            continue
     for key in dict_files:
         dict_files[key].close()
 
