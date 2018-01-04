@@ -23,11 +23,11 @@ fi
 FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' $3`)
 
 #get summary
-get_piPipes_summary $1 ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes $5 ${FACTOR} ${CPU} picluster
-get_piPipes_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes $5 ${FACTOR} ${CPU} transposon
+get_bed2_summary $1 ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes $5 ${FACTOR} ${CPU} picluster
+get_bed2_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes $5 ${FACTOR} ${CPU} transposon
 bedtools intersect -a $4 -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > $5_temp_gene.bed2 
-awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$1]=$2}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map $5_temp_gene.bed2 > $5_temp_gene.transform.bed2
-get_piPipes_summary $5_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.name $5 ${FACTOR} ${CPU} gene
+awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map $5_temp_gene.bed2 > $5_temp_gene.transform.bed2
+get_bed2_summary $5_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map $5 ${FACTOR} ${CPU} gene
 transform_id_to_name.R $5.gene ${PATH_PROG}/annotation/dm3/gene.map
 
 #modify tables and plot

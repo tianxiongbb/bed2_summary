@@ -2,9 +2,9 @@
 
 ###arguments
 Args=commandArgs()
-sense_lendis=read.table(paste(Args[6],".sense.lendis",sep=""),header=T,row.names=NULL)
-anti_lendis=read.table(paste(Args[6],".antisense.lendis",sep=""),header=T,row.names=NULL)
-pp=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL)
+sense_lendis=read.table(paste(Args[6],".sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+anti_lendis=read.table(paste(Args[6],".antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+pp=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL,check.names=F)
 summary=read.table(paste(Args[6],".summary",sep=""),header=T,row.names=1)
 rn=row.names(summary)
 id_to_name=read.table(Args[7],header=F,row.names=1)

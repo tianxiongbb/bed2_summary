@@ -2,9 +2,9 @@
 
 ###arguments
 Args=commandArgs()
-sense_lendis=read.table(paste(Args[6],".sense.lendis",sep=""),header=T,row.names=NULL)
-anti_lendis=read.table(paste(Args[6],".antisense.lendis",sep=""),header=T,row.names=NULL)
-pp=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL)
+sense_lendis=read.table(paste(Args[6],".sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+anti_lendis=read.table(paste(Args[6],".antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+pp=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL,check.names=F)
 summary=read.table(paste(Args[6],".summary",sep=""),header=T,row.names=1)
 rn=row.names(summary)
 
@@ -15,14 +15,14 @@ fun_zscore=function(x){
 	z=(x_treat-mean(x_HkGene))/sd(x_HkGene)
 	return(z)
 }
-fun_plot_lendis(x1, x2){
+fun_plot_lendis=function(x1, x2){
 	par(mar=c(1,1,1,2))
 	barplot(x1,space=0,border="white",col="#e41a1c",ylim=c(0,max(x1,x2)),yaxt="n")
 	axis(1,1:21,label=15:35,lwd=0,padj=-0.3)
 	text(0,max(x1,x2)*8/10,pos=4,font=2,label=paste("peak:\n",prettyNum(max(x1,x2),big.mark=","),sep=""))
 	barplot(-x2,space=0,border="white",col="#377eb8",ylim=c(-max(x1,x2),0),yaxt="n")
 }
-fun_plot_pp(x){
+fun_plot_pp=function(x){
 	par(mar=c(4,1,4,1),cex=0.65)
 	barplot(x,space=0,border="white",col="black",yaxt="n")
 	axis(1,c(1,10,20,30)-0.5,label=c(1,10,20,30),lwd=0)
@@ -31,7 +31,8 @@ fun_plot_pp(x){
 }
 
 ###modify tables
-summary=transform(summary, zscore=apply(pp[,rn],2,fun_zscore), pp_score=pp[10,rn])
+summary=transform(summary, zscore=as.vector(apply(pp[,rn],2,fun_zscore)), pp_score=as.vector(t(pp[10,rn])))
+summary[which(is.na(summary[,"zscore"])),"zscore"]=-1
 write.table(summary, paste(Args[6],".summary",sep=""), sep="\t", quote=F)
 row.names(pp)=1:30
 write.table(pp, paste(Args[6],".pp",sep=""), sep="\t", quote=F)
@@ -53,6 +54,6 @@ for(i in rn){
 	par(mar=c(0,0,0,0),cex=1)
 	plot.new()
 	text(0.5,0.5,label=i,font=2,cex=1)
-	fun_plot_pp(pp[,rn])
+	fun_plot_pp(pp[,i])
 	fun_plot_lendis(sense_lendis[,rn],anti_lendis[,rn])
 dev.off()

@@ -42,7 +42,7 @@ do
 	sp=`cat ${PATH_SIGNAL}/${n}.species`
 	echo -e "${n}\t${rd}\t${sp}" >> ${3}_body4
 done
-echo -e "name\tuniq_sense_reads\tuniq_antisense_reads\tall_sense_reads\tall_antisense_reads\tuniq_sense_species\tuniq_antisense_species]tall_sense_species\tall_antisense_species" > ${3}_header2
+echo -e "\tuniq_sense_reads\tuniq_antisense_reads\tall_sense_reads\tall_antisense_reads\tuniq_sense_species\tuniq_antisense_species\tall_sense_species\tall_antisense_species" > ${3}_header2
 echo -e "" >> ${3}_header1
 touch ${3}_body1
 for i in ${PATH_LENDIS}/*.sense 
