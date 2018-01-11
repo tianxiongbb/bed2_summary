@@ -18,7 +18,7 @@ fun_zscore=function(x){
 fun_plot_lendis=function(x1, x2){
 	par(mar=c(1,3,1,2))
 	barplot(x1,space=0,border="white",col="#e41a1c",ylim=c(0,max(x1,x2)))
-	axis(1,1:21,label=15:35,lwd=0,padj=-0.3)
+	axis(1,1:21-0.5,label=15:35,lwd=0,padj=-0.3)
 	text(0,max(x1,x2)*8/10,pos=4,font=2,label=paste("peak:\n",prettyNum(max(x1,x2),big.mark=","),sep=""))
 	barplot(-x2,space=0,border="white",col="#377eb8",ylim=c(-max(x1,x2),0))
 }
