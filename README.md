@@ -6,13 +6,17 @@ For easy install, run install.sh in *bed2_summary* folder after download and unz
 After this, simple use `run_bed2_summary` to generate the summary of piPipes or mapping result.
 ***
 ## input
-*bed2_summary* need 5 input (6th is alternative):
-1. bed2 file of reads directly mapped to piclusters, all mapped and no size selected. For piPipes results, it is usually in `transposon_piRNAcluster_mapping_normalized_by_xxx/xxx.x_rRNA.transposon.a1.insert.bed2`.
-2. bed2 file of reads directly mapped to transposons, all mapped and no size selected. For piPipes results, it is usually in `transposon_piRNAcluster_mapping_normalized_by_xxx/xxx.x_rRNA.piRNAcluster.a1.insert.bed2`.
-3. bed2 file which contains reads used as normalization factor. eg: normalize by miRNA by using `hairpins_mapping/xxx.x_rRNA.hairpin.xxx.bed2` in piPipes result; normalie by unique mapped reads except miRNA and rRNA by using `genome_mapping/xxx.x_rRNA.x_miRNA.xxx.unique.bed2` in piPipes result; or any other bed2 files in different case.
-4. bed2 file of reads mapped to genome after removing rRNA and miRNA reads, all mapped and no size selected. For piPipes results, it is usually in `genome_mapping/xxx.x_rRNA.x_miRNA.xxx.all.bed2`.
-5. output prefix name included folder name. eg: /home/bed2_summary/example.
-6. Thread number for running. In deafult *bed2_summary* will only use 1 thread.
+*bed2_summary* need at least 4 input (first 4 parameters is required, others is optional):
+1. -c control sample name with directory. Use without -t will only give out plots for control sample. eg: path_to_piPipes_result/sample_name_control
+2. -o output directory. All the output files will be in this folder including bucket plots and summary. eg: results/piPipes/bed2_summary/
+3. -g genome used. default: dm3
+4. -n normalization method.  
+    miRNA: normalized to reads per million mapped miRNA reads  
+    uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
+5. -t treatment sample name with directory. If set, *bed2_summary* can make comparison between control and treatment
+6. -G whether doing analysis genes.  
+    analysis for genes may take more than 1 hour and the figure pdf for genes is very large.
+7. -p CPU numbers used in *bed2_summary*
 ***
 ## output
 *bed2_summary* can give three summary files: `prefix.picluster.summary`, `prefix.transposon.summary` and `prefix.gene.summary` which summarize informations for each picluster, transposon or gene in each row. And there are 10 columns in xxx.summary:
@@ -27,8 +31,11 @@ After this, simple use `run_bed2_summary` to generate the summary of piPipes or 
 9. ping-pong zscore
 10. normalized 10nt overlapped read pairs
 
-*bed2_summary* can also output three pdf files for piclusters, transposons and genes respectively. In the pdf files, ping-pong score, length distribution for each element is included.
+*bed2_summary* can also output bucketplot, scatterplot and boxplot for piclusters, transposons and genes respectively. In the plot files, ping-pong score, length distribution and signal profile for each element is included.
 ![42AB](img/42AB.jpg "42AB")
+
+![picluster](img/picluster.scatter.jpg "picluster")
+
 
 
 ## contact
