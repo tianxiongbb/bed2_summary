@@ -1,37 +1,135 @@
 #!/bin/bash
 
 #help file
-if [ $# -lt 4 ];then
-	echo0 1 $0" in.piRNAcluster.bed2 in.transposon.bed2 in.hairpin.bed2 in.genome.bed2 out.prefix [CPU]"
-	exit 1
+help_info(){
+echo -e "\033[40;33;1m"
+cat << EOF
+Author: Tianxiong (Bear) Yu
+usage:
+run_bed2_summary -t treat.prefix -o out.prefix -g genome -n [miRNA|uniq] [-c control.prefix] [-p CPU] [-G [0|1|yes|no]]
+
+Parameters:
+    -t,-c path_to_piPipes_result/sample_name, eg: /results/piPipes/condition
+    -p CPU number to be used. default: 1
+    -o output directory name, eg: results/piPipes/bed2_summary/
+    -g genome used. default: dm3
+    -n normalization method.
+        miRNA: normalized to reads per million mapped miRNA reads
+        uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
+    -G whether analysis genes. default: no
+        analysis for genes may take more than 1 hour and the figure pdf for genes is very large.
+    -h help information
+
+If anybugs, please contact yutianxiong@gmail.com
+EOF
+echo -e "\033[0m"
+}
+if [ $# -lt 1 ];then
+	help_info && exit 1
 fi
 
-#initialize parameters
+#parameters
+IN2=0
 PATH_PROG=`dirname $0`
-PIRNA=$1
-TRANSPOSON=$2
-HAIRPIN=$3
-GENOME=$4
-PATH_OUT=`dirname $5`
-if [ $# -gt 5 ];then
-	CPU=$6
+CPU=1
+GENE=0
+while getopts "ht:c:p:o:g:n:G" OPTION; do
+	case $OPTION in
+		h)	help_info && exit 1 ;;
+		t)	IN1=${OPTARG} ;;
+		c)	IN2=${OPTARG} ;;
+		p)	CPU=${OPTARG} ;;
+		o)	OUTDIR=${OPTARG} ;;
+		n)	METHOD=${OPTARG} ;;
+		g)	GENOME=${OPTARG} ;;
+		G)	GENE=1 ;;
+		*)	help_info && exit 1 ;;
+	esac
+done
+
+###run for the first sample
+IN_DIR=`dirname ${IN1}`
+IN_SAMPLE=`basename ${IN1}`
+OUTDIR=${OUTDIR%\/}
+PREFIX1=${OUTDIR}/${IN_SAMPLE}
+PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a1.insert.bed2`
+TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a1.insert.bed2`
+if [ "$n" == "miRNA" ];then
+	HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v1m1.bed2`
 else
-	CPU=1
+	HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.unique.bed2`
+fi
+#calculate normlization factor
+FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' ${HAIRPIN}`)
+#get summary for picluster reads
+get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1} ${FACTOR} ${CPU} picluster
+bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1}.picluster.cov ${FACTOR}
+merged_bed2_summary.R ${PREFIX1}.picluster
+#get summary for transposon reads
+get_bed2_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX1} ${FACTOR} ${CPU} transposon
+bed2_bucket ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX1}.transposon.cov ${FACTOR}
+merged_bed2_summary.R ${PREFIX1}.transposon
+#get summary for gene reads
+if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
+	GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
+	bedtools intersect -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
+	awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1}_temp_gene.bed2 > ${PREFIX1}_temp_gene.transform.bed2
+	get_bed2_summary ${PREFIX1}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1} ${FACTOR} ${CPU} gene
+	transform_id_to_name.R ${PREFIX1}.gene ${PATH_PROG}/annotation/dm3/gene.map
+	merged_bed2_summary.R ${PREFIX1}.gene
 fi
 
-#calculate normlization factor
-FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' $3`)
+###run for the second sample if -c is set
+if [ "${IN2}" != "0" ];then
+	IN_DIR=`dirname ${IN2}`
+	IN_SAMPLE=`basename ${IN2}`
+	OUTDIR=${OUTDIR%\/}
+	PREFIX2=${OUTDIR}/${IN_SAMPLE}
+	PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a1.insert.bed2`
+	TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a1.insert.bed2`
+	if [ "$n" == "miRNA" ];then
+		HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v1m1.bed2`
+	else
+		HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.unique.bed2`
+	fi
+	#calculate normlization factor
+	FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' ${HAIRPIN}`)
+	#get summary for picluster reads
+	get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2} ${FACTOR} ${CPU} picluster
+	bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2}.picluster.cov ${FACTOR}
+	merged_bed2_summary.R ${PREFIX2}.picluster
+	#get summary for transposon reads
+	get_bed2_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX2} ${FACTOR} ${CPU} transposon
+	bed2_bucket ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX2}.transposon.cov ${FACTOR}
+	merged_bed2_summary.R ${PREFIX2}.transposon
+	#get summary for gene reads
+	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
+		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
+		bedtools intersect -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
+		awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2}_temp_gene.bed2 > ${PREFIX2}_temp_gene.transform.bed2
+		get_bed2_summary ${PREFIX2}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2} ${FACTOR} ${CPU} gene
+		transform_id_to_name.R ${PREFIX2}.gene ${PATH_PROG}/annotation/dm3/gene.map
+		merged_bed2_summary.R ${PREFIX2}.gene
+	fi
+fi
 
-#get summary for picluster reads
-get_bed2_summary $1 ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes $5 ${FACTOR} ${CPU} picluster
-modify_and_plot_summary.R $5.picluster
-#get summary for transposon reads
-get_bed2_summary $2 ${PATH_PROG}/annotation/dm3/transposon.sizes $5 ${FACTOR} ${CPU} transposon
-modify_and_plot_summary.R $5.transposon
-#get summary for gene reads
-bedtools intersect -a $4 -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > $5_temp_gene.bed2 
-awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map $5_temp_gene.bed2 > $5_temp_gene.transform.bed2
-get_bed2_summary $5_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map $5 ${FACTOR} ${CPU} gene
-transform_id_to_name.R $5.gene ${PATH_PROG}/annotation/dm3/gene.map
-modify_and_plot_summary.R $5.gene
+###bucket plot
+if [ "$IN2" == "0" ];then
+	plot_bed2_summary.R ${PREFIX1}.picluster
+	plot_bed2_summary.R ${PREFIX1}.transposon
+	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
+		plot_bed2_summary.R ${PREFIX1}.gene
+	fi
+else
+	plot_bed2_summary.R ${PREFIX1}.picluster ${PREFIX2}.picluster
+	plot_bed2_summary.R ${PREFIX1}.transposon ${PREFIX2}.transposon
+	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
+		plot_bed2_summary.R ${PREFIX1}.gene ${PREFIX2}.gene
+	fi
+fi
+
+
+
+
+
 

@@ -35,8 +35,14 @@ do
 	bn=`basename $i`
 	n=${bn%.bed2}
 	echo -en "\t${n}" >> ${3}_header1
-	cut -f 6 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.sense 
-	cut -f 7 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.anti 
+	cut -f 2 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.uniq.reads.sense 
+	cut -f 3 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.uniq.reads.anti 
+	cut -f 4 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.uniq.species.sense 
+	cut -f 5 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.uniq.species.anti 
+	cut -f 6 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.all.reads.sense 
+	cut -f 7 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.all.reads.anti 
+	cut -f 8 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.all.species.sense 
+	cut -f 9 ${PATH_LENDIS}/${n}.lendis | awk 'NR!=1' > ${PATH_LENDIS}/${n}.all.species.anti 
 	cut -f 2 ${PATH_PP}/${n}.pp > ${PATH_PP}/${n}.ppc 
 	rd=`cat ${PATH_SIGNAL}/${n}.rpm`
 	sp=`cat ${PATH_SIGNAL}/${n}.species`
@@ -45,13 +51,13 @@ done
 echo -e "\tuniq_sense_reads\tuniq_antisense_reads\tall_sense_reads\tall_antisense_reads\tuniq_sense_species\tuniq_antisense_species\tall_sense_species\tall_antisense_species" > ${3}_header2
 echo -e "" >> ${3}_header1
 touch ${3}_body1
-for i in ${PATH_LENDIS}/*.sense 
+for i in ${PATH_LENDIS}/*uniq.reads.sense 
 do
 	paste ${3}_body1 $i > ${3}_t && mv ${3}_t ${3}_body1
 done
 cut -f 2- ${3}_body1 > ${3}_t && mv ${3}_t ${3}_body1
 touch ${3}_body2
-for i in ${PATH_LENDIS}/*.anti 
+for i in ${PATH_LENDIS}/*uniq.reads.anti 
 do
 	paste ${3}_body2 $i > ${3}_t && mv ${3}_t ${3}_body2
 done
@@ -61,11 +67,56 @@ for i in ${PATH_PP}/*.ppc
 do
 	paste ${3}_body3 $i > ${3}_t && mv ${3}_t ${3}_body3
 done
+
+touch ${3}_body5
+for i in ${PATH_LENDIS}/*uniq.species.sense 
+do
+	paste ${3}_body5 $i > ${3}_t && mv ${3}_t ${3}_body5
+done
+cut -f 2- ${3}_body5 > ${3}_t && mv ${3}_t ${3}_body5
+touch ${3}_body6
+for i in ${PATH_LENDIS}/*uniq.species.anti 
+do
+	paste ${3}_body6 $i > ${3}_t && mv ${3}_t ${3}_body6
+done
+cut -f 2- ${3}_body6 > ${3}_t && mv ${3}_t ${3}_body6
+touch ${3}_body7
+for i in ${PATH_LENDIS}/*all.reads.sense
+do
+	paste ${3}_body7 $i > ${3}_t && mv ${3}_t ${3}_body7
+done
+cut -f 2- ${3}_body7 > ${3}_t && mv ${3}_t ${3}_body7
+touch ${3}_body8
+for i in ${PATH_LENDIS}/*all.reads.anti
+do
+	paste ${3}_body8 $i > ${3}_t && mv ${3}_t ${3}_body8
+done
+cut -f 2- ${3}_body8 > ${3}_t && mv ${3}_t ${3}_body8
+touch ${3}_body9
+for i in ${PATH_LENDIS}/*all.species.sense
+do
+	paste ${3}_body9 $i > ${3}_t && mv ${3}_t ${3}_body9
+done
+cut -f 2- ${3}_body9 > ${3}_t && mv ${3}_t ${3}_body9
+touch ${3}_body10
+for i in ${PATH_LENDIS}/*all.species.anti 
+do
+	paste ${3}_body10 $i > ${3}_t && mv ${3}_t ${3}_body10
+done
+cut -f 2- ${3}_body10 > ${3}_t && mv ${3}_t ${3}_body10
+
+
 cut -f 2- ${3}_body3 > ${3}_t && mv ${3}_t ${3}_body3
-cat ${3}_header1 ${3}_body1 > ${3}.$6.sense.lendis
-cat ${3}_header1 ${3}_body2 > ${3}.$6.antisense.lendis
+cat ${3}_header1 ${3}_body1 > ${3}.$6.uniq.reads.sense.lendis
+cat ${3}_header1 ${3}_body2 > ${3}.$6.uniq.reads.antisense.lendis
 cat ${3}_header1 ${3}_body3 > ${3}.$6.pp
 cat ${3}_header2 ${3}_body4 > ${3}.$6.summary
+cat ${3}_header1 ${3}_body5 > ${3}.$6.uniq.species.sense.lendis
+cat ${3}_header1 ${3}_body6 > ${3}.$6.uniq.species.antisense.lendis
+cat ${3}_header1 ${3}_body7 > ${3}.$6.all.reads.sense.lendis
+cat ${3}_header1 ${3}_body8 > ${3}.$6.all.reads.antisense.lendis
+cat ${3}_header1 ${3}_body9 > ${3}.$6.all.species.sense.lendis
+cat ${3}_header1 ${3}_body10 > ${3}.$6.all.species.antisense.lendis
 rm ${3}_header* ${3}_body*
 rm -rf ${3}_temp*
 
