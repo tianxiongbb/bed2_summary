@@ -150,7 +150,10 @@ fun_plot_scatter2_for_entropy=function(x, y, n1, n2){
 # judge mode (single or comparison)
 if(length(Args)==6){
 	# single mode
+	pre=paste(strsplit(Args[6],".",fixed=T)[[1]][1:(length(strsplit(Args[6],".",fixed=T)[[1]])-2)],collapse=".")
 	sn=strsplit(Args[6],"/")[[1]][length(strsplit(Args[6],"/")[[1]])]
+	appendix=paste(strsplit(sn,".",fixed=T)[[1]][(length(strsplit(sn,".",fixed=T)[[1]])-1):length(strsplit(sn,".",fixed=T)[[1]])],collapse=".")
+	sn=paste(strsplit(sn,".",fixed=T)[[1]][1:(length(strsplit(sn,".",fixed=T)[[1]])-2)],collapse=".")
 	# read files
 	uniq_reads_sense_lendis=read.table(paste(Args[6],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
 	uniq_reads_anti_lendis=read.table(paste(Args[6],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
@@ -165,7 +168,7 @@ if(length(Args)==6){
 	summary1=read.table(paste(Args[6],".summary",sep=""),header=T,row.names=1)
 	rn=row.names(summary1)
 	# plot
-	pdf(paste(Args[6], ".pdf", sep=""), width=21, height=3, useDingbats=F)
+	pdf(paste(pre,".",appendix,".pdf", sep=""), width=21, height=5*7/13, useDingbats=F)
 	laymat=matrix(1,7,7)
 	laymat[2:4,1]=2; laymat[5:7,1]=2
 	laymat[2:4,2]=3; laymat[5:7,2]=4;
@@ -189,8 +192,12 @@ if(length(Args)==6){
 	dev.off()
 }else{
 	# comparison mode
+	pre=paste(strsplit(Args[6],".",fixed=T)[[1]][1:(length(strsplit(Args[6],".",fixed=T)[[1]])-2)],collapse=".")
 	sn1=strsplit(Args[6],"/")[[1]][length(strsplit(Args[6],"/")[[1]])]
+	appendix=paste(strsplit(sn1,".",fixed=T)[[1]][(length(strsplit(sn1,".",fixed=T)[[1]])-1):length(strsplit(sn1,".",fixed=T)[[1]])],collapse=".")
+	sn1=paste(strsplit(sn1,".",fixed=T)[[1]][1:(length(strsplit(sn1,".",fixed=T)[[1]])-2)],collapse=".")
 	sn2=strsplit(Args[7],"/")[[1]][length(strsplit(Args[7],"/")[[1]])]
+	sn2=paste(strsplit(sn2,".",fixed=T)[[1]][1:(length(strsplit(sn2,".",fixed=T)[[1]])-2)],collapse=".")
 	# read files
 	uniq_reads_sense_lendis1=read.table(paste(Args[6],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
 	uniq_reads_anti_lendis1=read.table(paste(Args[6],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
@@ -217,7 +224,7 @@ if(length(Args)==6){
 	rn=row.names(summary1)
 	# plot
 	# add scatterplot for comparing sample1 and sample2
-	pdf(paste(Args[6],"_vs_",sn2, ".scatter.pdf", sep=""), width=14, height=6, useDingbats=F)
+	pdf(paste(pre,"_vs_",sn2,".",appendix,".scatter.pdf", sep=""), width=14, height=6, useDingbats=F)
 	layout(matrix(c(1:9,9),2,5))
 	par(tcl=0.3,bty="n")
 	fun_plot_scatter2(summary1[,1]+summary1[,2],summary2[,1]+summary2[,2],
@@ -234,7 +241,7 @@ if(length(Args)==6){
 	fun_plot_scatter2_for_entropy(summary1,summary2,sn1,sn2)
 	dev.off()
 	# bucket plot
-	pdf(paste(Args[6],"_vs_",sn2, ".pdf", sep=""), width=21, height=5, useDingbats=F)
+	pdf(paste(pre,"_vs_",sn2,".",appendix,".pdf", sep=""), width=21, height=5, useDingbats=F)
 	laymat=matrix(1,13,8)
 	laymat[2:7,1]=2; laymat[8:13,1]=3; laymat[2:7,2]=4; laymat[8:13,2]=5
 	laymat[2:4,3]=6; laymat[5:7,3]=7; laymat[8:10,3]=8; laymat[11:13,3]=9 

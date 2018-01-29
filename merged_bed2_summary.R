@@ -29,16 +29,16 @@ write.table(pp, paste(Args[6],".pp",sep=""), sep="\t", quote=F)
 row.names(uniq_reads_sense_lendis)=15:35
 write.table(uniq_reads_sense_lendis, paste(Args[6],".uniq.reads.sense.lendis",sep=""), sep="\t", quote=F)
 row.names(uniq_reads_anti_lendis)=15:35
-write.table(uniq_reads_anti_lendis, paste(Args[6],".uniq.reads.anti.lendis",sep=""), sep="\t", quote=F)
+write.table(uniq_reads_anti_lendis, paste(Args[6],".uniq.reads.antisense.lendis",sep=""), sep="\t", quote=F)
 row.names(uniq_species_sense_lendis)=15:35
 write.table(uniq_species_sense_lendis, paste(Args[6],".uniq.species.sense.lendis",sep=""), sep="\t", quote=F)
 row.names(uniq_species_anti_lendis)=15:35
-write.table(uniq_species_anti_lendis, paste(Args[6],".uniq.species.anti.lendis",sep=""), sep="\t", quote=F)
+write.table(uniq_species_anti_lendis, paste(Args[6],".uniq.species.antisense.lendis",sep=""), sep="\t", quote=F)
 row.names(all_reads_sense_lendis)=15:35
 write.table(all_reads_sense_lendis, paste(Args[6],".all.reads.sense.lendis",sep=""), sep="\t", quote=F)
 row.names(all_reads_anti_lendis)=15:35
-write.table(all_reads_anti_lendis, paste(Args[6],".all.reads.anti.lendis",sep=""), sep="\t", quote=F)
+write.table(all_reads_anti_lendis, paste(Args[6],".all.reads.antisense.lendis",sep=""), sep="\t", quote=F)
 row.names(all_species_sense_lendis)=15:35
 write.table(all_species_sense_lendis, paste(Args[6],".all.species.sense.lendis",sep=""), sep="\t", quote=F)
 row.names(all_species_anti_lendis)=15:35
-write.table(all_species_anti_lendis, paste(Args[6],".all.species.anti.lendis",sep=""), sep="\t", quote=F)
+write.table(all_species_anti_lendis, paste(Args[6],".all.species.antisense.lendis",sep=""), sep="\t", quote=F)
