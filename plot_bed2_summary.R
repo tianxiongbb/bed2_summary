@@ -1,10 +1,10 @@
 #!/usr/bin/env Rscript
-library(parallel)
+#library(parallel)
 Args=commandArgs()
 
 # help----
 if(length(Args)<7){
-	stop(paste("usage:\n\t",substr(Args[4],8,100)," CPU prefix1 [prefix2_to_compare_with_prefix1]\n",sep=""))
+	stop(paste("usage:\n\t",substr(Args[4],8,100)," prefix1 [prefix2_to_compare_with_prefix1]\n",sep=""))
 }
 
 # function----
@@ -24,7 +24,7 @@ fun_plot_lendis=function(x1, x2, m){
 }
 fun_plot_pp=function(x){
 	par(mar=c(3,3,3,1),cex=0.65)
-	barplot(x,space=0,border="white",col="black",ylim=c(0,min(max(x),200)))
+	barplot(x,space=0,border="white",col="black",ylim=c(0,max(x)))
 	axis(1,c(1,10,20,30)-0.5,label=c(1,10,20,30),lwd=0)
 	zs=round((x[10]-mean(x[c(1:9,11:30)]))/sd(x[c(1:9,11:30)]),2)
 	text(10,max(x)*9/10,label=paste("z-score=",zs,sep=""),col="#e41a1c",font=2,pos=4,cex=1.2)
@@ -57,12 +57,12 @@ fun_plot_lendis2=function(x1, x2, y1, y2, m){
 }
 fun_plot_pp2=function(x, y){
 	par(mar=c(3,3,3,1),cex=0.65)
-	barplot(x,space=0,border="white",col="black",ylim=c(0,min(max(x, y),200)))
+	barplot(x,space=0,border="white",col="black",ylim=c(0,max(x, y)))
 	axis(1,c(1,10,20,30)-0.5,label=c(1,10,20,30),lwd=0)
 	zs=round((x[10]-mean(x[c(1:9,11:30)]))/sd(x[c(1:9,11:30)]),2)
 	text(10,max(x,y)*9/10,label=paste("z-score=",zs,sep=""),col="#e41a1c",font=2,pos=4,cex=1.2)
 	par(mar=c(3,3,3,1),cex=0.65)
-	barplot(y,space=0,border="white",col="black",ylim=c(0,min(max(x,y),200)))
+	barplot(y,space=0,border="white",col="black",ylim=c(0,max(x,y)))
 	axis(1,c(1,10,20,30)-0.5,label=c(1,10,20,30),lwd=0)
 	zs=round((y[10]-mean(y[c(1:9,11:30)]))/sd(y[c(1:9,11:30)]),2)
 	text(10,max(x,y)*9/10,label=paste("z-score=",zs,sep=""),col="#e41a1c",font=2,pos=4,cex=1.2)
@@ -113,7 +113,7 @@ fun_plot_scatter2_for_pp=function(x, y, n1, n2){
 	cl[which((x+2)/(y+2)>2)]="#377eb8"
 	cl[which((x+2)/(y+2)<1/2)]="#e41a1c"
 	i1=log2(x+2); i2=log2(y+2)
-	plot(-100,xlim=c(0,min(max(i1,i2),200)),ylim=c(0,min(200,max(i1,i2))),xlab=n1,ylab=n2,xaxt="n",yaxt="n",main="ping-pong zscore")
+	plot(-100,xlim=c(0,min(max(i1,i2),9)),ylim=c(0,min(9,max(i1,i2))),xlab=n1,ylab=n2,xaxt="n",yaxt="n",main="ping-pong zscore")
 	axis(1,0:10,label=c(2^(0:10)-2))
 	axis(2,0:10,label=c(2^(0:10)-2))
 	abline(0,1); abline(1,1,lty=2); abline(-1,1,lty=2)
@@ -181,22 +181,22 @@ fun_plot_comparison_mode=function(i){
 # judge mode (single or comparison)
 if(length(Args)==6){
 	# single mode
-	pre=paste(strsplit(Args[7],".",fixed=T)[[1]][1:(length(strsplit(Args[7],".",fixed=T)[[1]])-2)],collapse=".")
-	sn=strsplit(Args[7],"/")[[1]][length(strsplit(Args[7],"/")[[1]])]
+	pre=paste(strsplit(Args[6],".",fixed=T)[[1]][1:(length(strsplit(Args[6],".",fixed=T)[[1]])-2)],collapse=".")
+	sn=strsplit(Args[6],"/")[[1]][length(strsplit(Args[6],"/")[[1]])]
 	appendix=paste(strsplit(sn,".",fixed=T)[[1]][(length(strsplit(sn,".",fixed=T)[[1]])-1):length(strsplit(sn,".",fixed=T)[[1]])],collapse=".")
 	sn=paste(strsplit(sn,".",fixed=T)[[1]][1:(length(strsplit(sn,".",fixed=T)[[1]])-2)],collapse=".")
 	# read files
-	uniq_reads_sense_lendis=read.table(paste(Args[7],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_reads_anti_lendis=read.table(paste(Args[7],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_sense_lendis=read.table(paste(Args[7],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_anti_lendis=read.table(paste(Args[7],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_sense_lendis=read.table(paste(Args[7],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_anti_lendis=read.table(paste(Args[7],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_sense_lendis=read.table(paste(Args[7],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_anti_lendis=read.table(paste(Args[7],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	pp=read.table(paste(Args[7],".pp",sep=""),header=T,row.names=NULL,check.names=F)
-	cov=read.table(paste(Args[7],".cov",sep=""),header=F,row.names=NULL,check.names=F)
-	summary1=read.table(paste(Args[7],".summary",sep=""),header=T,row.names=1)
+	uniq_reads_sense_lendis=read.table(paste(Args[6],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_reads_anti_lendis=read.table(paste(Args[6],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_sense_lendis=read.table(paste(Args[6],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_anti_lendis=read.table(paste(Args[6],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_sense_lendis=read.table(paste(Args[6],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_anti_lendis=read.table(paste(Args[6],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_sense_lendis=read.table(paste(Args[6],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_anti_lendis=read.table(paste(Args[6],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	pp=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL,check.names=F)
+	cov=read.table(paste(Args[6],".cov",sep=""),header=F,row.names=NULL,check.names=F)
+	summary1=read.table(paste(Args[6],".summary",sep=""),header=T,row.names=1)
 	rn=row.names(summary1)
 	# plot
 	pdf(paste(pre,".",appendix,".pdf", sep=""), width=21, height=5*7/13, useDingbats=F)
@@ -208,41 +208,41 @@ if(length(Args)==6){
 	for(i in 5:7){laymat[5:7,i]=i*2-2}
 	layout(laymat)
 	par(cex=0.5,tcl=0.3)
-	cl=makeCluster(as.numeric(Args[6]))
-	clusterExport(cl=cl,varlist=c("sn","uniq_reads_sense_lendis","uniq_reads_anti_lendis","uniq_species_sense_lendis","uniq_species_anti_lendis","all_reads_sense_lendis","all_reads_anti_lendis","all_species_sense_lendis","all_species_anti_lendis","pp","cov","fun_plot_pp","fun_plot_lendis","fun_plot_bucket"),envir=environment())
-	parLapply(cl,rn,fun_plot_single_mode)
+	#cl=makeCluster(as.numeric(Args[6]))
+	#clusterExport(cl=cl,varlist=c("sn","uniq_reads_sense_lendis","uniq_reads_anti_lendis","uniq_species_sense_lendis","uniq_species_anti_lendis","all_reads_sense_lendis","all_reads_anti_lendis","all_species_sense_lendis","all_species_anti_lendis","pp","cov","fun_plot_pp","fun_plot_lendis","fun_plot_bucket"),envir=environment())
+	lapply(rn,fun_plot_single_mode)
 	dev.off()
 }else{
 	# comparison mode
-	pre=paste(strsplit(Args[7],".",fixed=T)[[1]][1:(length(strsplit(Args[7],".",fixed=T)[[1]])-2)],collapse=".")
-	sn1=strsplit(Args[7],"/")[[1]][length(strsplit(Args[7],"/")[[1]])]
+	pre=paste(strsplit(Args[6],".",fixed=T)[[1]][1:(length(strsplit(Args[6],".",fixed=T)[[1]])-2)],collapse=".")
+	sn1=strsplit(Args[6],"/")[[1]][length(strsplit(Args[6],"/")[[1]])]
 	appendix=paste(strsplit(sn1,".",fixed=T)[[1]][(length(strsplit(sn1,".",fixed=T)[[1]])-1):length(strsplit(sn1,".",fixed=T)[[1]])],collapse=".")
 	sn1=paste(strsplit(sn1,".",fixed=T)[[1]][1:(length(strsplit(sn1,".",fixed=T)[[1]])-2)],collapse=".")
-	sn2=strsplit(Args[8],"/")[[1]][length(strsplit(Args[8],"/")[[1]])]
+	sn2=strsplit(Args[7],"/")[[1]][length(strsplit(Args[7],"/")[[1]])]
 	sn2=paste(strsplit(sn2,".",fixed=T)[[1]][1:(length(strsplit(sn2,".",fixed=T)[[1]])-2)],collapse=".")
 	# read files
-	uniq_reads_sense_lendis1=read.table(paste(Args[7],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_reads_anti_lendis1=read.table(paste(Args[7],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_sense_lendis1=read.table(paste(Args[7],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_anti_lendis1=read.table(paste(Args[7],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_sense_lendis1=read.table(paste(Args[7],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_anti_lendis1=read.table(paste(Args[7],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_sense_lendis1=read.table(paste(Args[7],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_anti_lendis1=read.table(paste(Args[7],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	pp1=read.table(paste(Args[7],".pp",sep=""),header=T,row.names=NULL,check.names=F)
-	cov1=read.table(paste(Args[7],".cov",sep=""),header=F,row.names=NULL,check.names=F)
-	summary1=read.table(paste(Args[7],".summary",sep=""),header=T,row.names=1)
-	uniq_reads_sense_lendis2=read.table(paste(Args[8],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_reads_anti_lendis2=read.table(paste(Args[8],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_sense_lendis2=read.table(paste(Args[8],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	uniq_species_anti_lendis2=read.table(paste(Args[8],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_sense_lendis2=read.table(paste(Args[8],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_reads_anti_lendis2=read.table(paste(Args[8],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_sense_lendis2=read.table(paste(Args[8],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	all_species_anti_lendis2=read.table(paste(Args[8],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
-	pp2=read.table(paste(Args[8],".pp",sep=""),header=T,row.names=NULL,check.names=F)
-	cov2=read.table(paste(Args[8],".cov",sep=""),header=F,row.names=NULL,check.names=F)
-	summary2=read.table(paste(Args[8],".summary",sep=""),header=T,row.names=1)
+	uniq_reads_sense_lendis1=read.table(paste(Args[6],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_reads_anti_lendis1=read.table(paste(Args[6],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_sense_lendis1=read.table(paste(Args[6],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_anti_lendis1=read.table(paste(Args[6],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_sense_lendis1=read.table(paste(Args[6],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_anti_lendis1=read.table(paste(Args[6],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_sense_lendis1=read.table(paste(Args[6],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_anti_lendis1=read.table(paste(Args[6],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	pp1=read.table(paste(Args[6],".pp",sep=""),header=T,row.names=NULL,check.names=F)
+	cov1=read.table(paste(Args[6],".cov",sep=""),header=F,row.names=NULL,check.names=F)
+	summary1=read.table(paste(Args[6],".summary",sep=""),header=T,row.names=1)
+	uniq_reads_sense_lendis2=read.table(paste(Args[7],".uniq.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_reads_anti_lendis2=read.table(paste(Args[7],".uniq.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_sense_lendis2=read.table(paste(Args[7],".uniq.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	uniq_species_anti_lendis2=read.table(paste(Args[7],".uniq.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_sense_lendis2=read.table(paste(Args[7],".all.reads.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_reads_anti_lendis2=read.table(paste(Args[7],".all.reads.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_sense_lendis2=read.table(paste(Args[7],".all.species.sense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	all_species_anti_lendis2=read.table(paste(Args[7],".all.species.antisense.lendis",sep=""),header=T,row.names=NULL,check.names=F)
+	pp2=read.table(paste(Args[7],".pp",sep=""),header=T,row.names=NULL,check.names=F)
+	cov2=read.table(paste(Args[7],".cov",sep=""),header=F,row.names=NULL,check.names=F)
+	summary2=read.table(paste(Args[7],".summary",sep=""),header=T,row.names=1)
 	rn=row.names(summary1)
 	# plot
 	# add scatterplot for comparing sample1 and sample2
@@ -274,9 +274,9 @@ if(length(Args)==6){
 	for(i in 6:8){laymat[11:13,i]=i*4-7}
 	layout(laymat)
 	par(cex=0.5,tcl=0.3)
-	cl=makeCluster(as.numeric(Args[6]))
-	clusterExport(cl=cl,varlist=c("sn1","sn2","uniq_reads_sense_lendis1","uniq_reads_anti_lendis1","uniq_species_sense_lendis1","uniq_species_anti_lendis1","all_reads_sense_lendis1","all_reads_anti_lendis1","all_species_sense_lendis1","all_species_anti_lendis1","pp1","cov1","uniq_reads_sense_lendis2","uniq_reads_anti_lendis2","uniq_species_sense_lendis2","uniq_species_anti_lendis2","all_reads_sense_lendis2","all_reads_anti_lendis2","all_species_sense_lendis2","all_species_anti_lendis2","pp2","cov2","fun_plot_pp2","fun_plot_lendis2","fun_plot_bucket2"),envir=environment())
-	parLapply(cl,rn,fun_plot_comparison_mode)
+	#cl=makeCluster(as.numeric(Args[6]))
+	#clusterExport(cl=cl,varlist=c("sn1","sn2","uniq_reads_sense_lendis1","uniq_reads_anti_lendis1","uniq_species_sense_lendis1","uniq_species_anti_lendis1","all_reads_sense_lendis1","all_reads_anti_lendis1","all_species_sense_lendis1","all_species_anti_lendis1","pp1","cov1","uniq_reads_sense_lendis2","uniq_reads_anti_lendis2","uniq_species_sense_lendis2","uniq_species_anti_lendis2","all_reads_sense_lendis2","all_reads_anti_lendis2","all_species_sense_lendis2","all_species_anti_lendis2","pp2","cov2","fun_plot_pp2","fun_plot_lendis2","fun_plot_bucket2"),envir=environment())
+	lapply(rn,fun_plot_comparison_mode)
 	dev.off()
 }
-stopCluster(cl)
+#stopCluster(cl)
