@@ -77,7 +77,7 @@ do
 	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX1}.temp.gene.bed2 && GF=${PREFIX1}.temp.gene.bed2 
-		bedtools intersect -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
+		bedtools intersect -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
 		awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1}_temp_gene.bed2 > ${PREFIX1}_temp_gene.transform.bed2
 		get_bed2_summary ${PREFIX1}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1} ${FACTOR} ${CPU} gene
 		transform_id_to_name.R ${PREFIX1}.gene ${PATH_PROG}/annotation/dm3/gene.map
@@ -113,7 +113,7 @@ do
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 			GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 			awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX2}.temp.gene.bed2 && GF=${PREFIX2}.temp.gene.bed2 
-			bedtools intersect -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
+			bedtools intersect -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
 			awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2}_temp_gene.bed2 > ${PREFIX2}_temp_gene.transform.bed2
 			get_bed2_summary ${PREFIX2}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2} ${FACTOR} ${CPU} gene
 			transform_id_to_name.R ${PREFIX2}.gene ${PATH_PROG}/annotation/dm3/gene.map
