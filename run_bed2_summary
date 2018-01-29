@@ -6,7 +6,7 @@ echo -e "\033[40;33;1m"
 cat << EOF
 Author: Tianxiong (Bear) Yu
 usage:
-run_bed2_summary -t treat.prefix -o out.prefix -g genome -n [miRNA|uniq] [-c control.prefix] [-p CPU] [-G [0|1|yes|no]]
+run_bed2_summary -c control.prefix -o out.prefix -g genome -n [miRNA|uniq] [-t treat.prefix] [-p CPU] [-G [0|1|yes|no]]
 
 Parameters:
     -t,-c path_to_piPipes_result/sample_name, eg: /results/piPipes/condition
@@ -16,7 +16,7 @@ Parameters:
     -n normalization method.
         miRNA: normalized to reads per million mapped miRNA reads
         uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
-    -G whether analysis genes. default: no
+    -G set to analysis genes. default: not set
         analysis for genes may take more than 1 hour and the figure pdf for genes is very large.
     -h help information
 
@@ -36,8 +36,8 @@ GENE=0
 while getopts "ht:c:p:o:g:n:G" OPTION; do
 	case $OPTION in
 		h)	help_info && exit 1 ;;
-		t)	IN1=${OPTARG} ;;
-		c)	IN2=${OPTARG} ;;
+		t)	IN2=${OPTARG} ;;
+		c)	IN1=${OPTARG} ;;
 		p)	CPU=${OPTARG} ;;
 		o)	OUTDIR=${OPTARG} ;;
 		n)	METHOD=${OPTARG} ;;
@@ -47,7 +47,7 @@ while getopts "ht:c:p:o:g:n:G" OPTION; do
 	esac
 done
 
-for size in 20-23 24-32 0-100
+for size in 20-23 24-32 0-100 #seperate siRNA piRNA and smRNA
 do
 	###run for the first sample
 	IN_DIR=`dirname ${IN1}`
