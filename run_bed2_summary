@@ -77,7 +77,8 @@ do
 	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX1}.temp.gene.bed2 && GF=${PREFIX1}.temp.gene.bed2 
-		bedtools intersect -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
+		bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
+		bed2_bucket ${PREFIX2}_temp_gene.bed2 ${PATH_PROG}/annotation/dm3/gene.sizes ${PREFIX2}.gene.cov ${FACTOR}
 		awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1}_temp_gene.bed2 > ${PREFIX1}_temp_gene.transform.bed2
 		get_bed2_summary ${PREFIX1}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1} ${FACTOR} ${CPU} gene
 		transform_id_to_name.R ${PREFIX1}.gene ${PATH_PROG}/annotation/dm3/gene.map
@@ -113,25 +114,27 @@ do
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 			GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 			awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX2}.temp.gene.bed2 && GF=${PREFIX2}.temp.gene.bed2 
-			bedtools intersect -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.exon.bed -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+"}else{strand="-"};print gn,$2,$3,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
+			bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
+			bed2_bucket ${PREFIX2}_temp_gene.bed2 ${PATH_PROG}/annotation/dm3/gene.sizes ${PREFIX2}.gene.cov ${FACTOR}
 			awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2}_temp_gene.bed2 > ${PREFIX2}_temp_gene.transform.bed2
 			get_bed2_summary ${PREFIX2}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2} ${FACTOR} ${CPU} gene
+			bed2_bucket ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX2}.transposon.cov ${FACTOR}
 			transform_id_to_name.R ${PREFIX2}.gene ${PATH_PROG}/annotation/dm3/gene.map
 			merged_bed2_summary.R ${PREFIX2}.gene
 		fi
 	fi
 	###bucket plot
 	if [ "$IN2" == "0" ];then
-		plot_bed2_summary.R ${PREFIX1}.picluster
-		plot_bed2_summary.R ${PREFIX1}.transposon
+		plot_bed2_summary.R ${CPU} ${PREFIX1}.picluster
+		plot_bed2_summary.R ${CPU} ${PREFIX1}.transposon
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
-			plot_bed2_summary.R ${PREFIX1}.gene
+			plot_bed2_summary.R ${CPU} ${PREFIX1}.gene
 		fi
 	else
-		plot_bed2_summary.R ${PREFIX1}.picluster ${PREFIX2}.picluster
-		plot_bed2_summary.R ${PREFIX1}.transposon ${PREFIX2}.transposon
+		plot_bed2_summary.R ${CPU} ${PREFIX1}.picluster ${PREFIX2}.picluster
+		plot_bed2_summary.R ${CPU} ${PREFIX1}.transposon ${PREFIX2}.transposon
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
-			plot_bed2_summary.R ${PREFIX1}.gene ${PREFIX2}.gene
+			plot_bed2_summary.R ${CPU} ${PREFIX1}.gene ${PREFIX2}.gene
 		fi
 	fi
 	###remove temp files
