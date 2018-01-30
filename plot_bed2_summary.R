@@ -246,7 +246,7 @@ if(length(Args)==6){
 	clusterExport(cl=cl,varlist=c("sn","uniq_reads_sense_lendis","uniq_reads_anti_lendis","uniq_species_sense_lendis","uniq_species_anti_lendis","all_reads_sense_lendis","all_reads_anti_lendis","all_species_sense_lendis","all_species_anti_lendis","pp","cov","fun_plot_pp","fun_plot_lendis","fun_plot_bucket","pre","appendix"),envir=environment())
 	parLapply(cl,rn,fun_plot_single_mode)
 	# merge pdfs
-	system("echo0 2 \"merge pdfs......\"")
+	system("echo0 2 \"....merge pdfs\"")
 	if(length(rn)>2000){
 		fun_merge=function(in_pdfs){
 			system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,".",appendix,".pdf ",pre,".",appendix,".temp.head.pdf",in_pdfs,sep=""))
@@ -349,7 +349,7 @@ if(length(Args)==6){
 	clusterExport(cl=cl,varlist=c("sn1","sn2","uniq_reads_sense_lendis1","uniq_reads_anti_lendis1","uniq_species_sense_lendis1","uniq_species_anti_lendis1","all_reads_sense_lendis1","all_reads_anti_lendis1","all_species_sense_lendis1","all_species_anti_lendis1","pp1","cov1","uniq_reads_sense_lendis2","uniq_reads_anti_lendis2","uniq_species_sense_lendis2","uniq_species_anti_lendis2","all_reads_sense_lendis2","all_reads_anti_lendis2","all_species_sense_lendis2","all_species_anti_lendis2","pp2","cov2","fun_plot_pp2","fun_plot_lendis2","fun_plot_bucket2","pre","appendix","Args"),envir=environment())
 	parLapply(cl,rn,fun_plot_comparison_mode)
 	# merge pdfs
-	system("echo0 2 \"    merge pdfs......\"")
+	system("echo0 2 \"....merge pdfs\"")
 	if(length(rn)>2000){
 		fun_merge=function(in_pdfs){
 			system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",in_pdfs,sep=""))
@@ -368,7 +368,6 @@ if(length(Args)==6){
 		parLapply(cl,l_in_pdfs,fun_merge)
 		system(paste("rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
 	}else{
-		system("echo0 2 \"    merge pdfs......\"")
 		system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,"_vs_",sn2,".",appendix,".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf ",pre,"_vs_",sn2,".",appendix,".temp.body.*.pdf && rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
 	}
 }

@@ -49,7 +49,7 @@ done
 
 for size in 20-23 24-32 0-100 #seperate siRNA piRNA and smRNA
 do
-	echo0 4 "\n------ analyze ""nt smallRNAs ------\n"
+	echo0 4 "\n------ analyze "$size"nt smallRNAs ------\n"
 	###run for the first sample
 	IN_DIR=`dirname ${IN1}`
 	IN_SAMPLE=`basename ${IN1}`
@@ -67,38 +67,38 @@ do
 	#calculate normlization factor
 	echo0 2 "calculate normalization factor for control sample......"
 	FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' ${HAIRPIN}`)
-	echo0 3 "normalization factor: "$FACTOR
+	echo0 3 "....normalization factor: "$FACTOR
 	#get summary for picluster reads
 	echo0 2 "begin summarize picluster......"
-	echo0 2 "    run get_bed2_summary......"
+	echo0 2 "....run get_bed2_summary"
 	get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1} ${FACTOR} ${CPU} picluster
-	echo0 2 "    calculate signal for each position......"
+	echo0 2 "....calculate signal for each position"
 	bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1}.picluster.cov ${FACTOR}
-	echo0 2 "    merge summary files......"
+	echo0 2 "....merge summary files"
 	merged_bed2_summary.R ${PREFIX1}.picluster
 	#get summary for transposon reads
 	echo0 2 "begin summarize transposon for control sample......"
-	echo0 2 "    run get_bed2_summary......"
+	echo0 2 "....run get_bed2_summary"
 	get_bed2_summary ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX1} ${FACTOR} ${CPU} transposon
-	echo0 2 "    calculate signal for each position......"
+	echo0 2 "....calculate signal for each position"
 	bed2_bucket ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX1}.transposon.cov ${FACTOR}
-	echno0 2 "    merge summary files......"
+	echo0 2 "....merge summary files"
 	merged_bed2_summary.R ${PREFIX1}.transposon
 	#get summary for gene reads
 	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 		echo0 2 "begin summarize gene for control sample......"
 		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX1}.temp.gene.bed2 && GF=${PREFIX1}.temp.gene.bed2 
-		echo0 2 "    intersect with gene.bed12......"
+		echo0 2 "....intersect with gene.bed12"
 		bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
-		echo0 2 "    calculate signal for each position......"
+		echo0 2 "....calculate signal for each position"
 		bed2_bucket ${PREFIX1}_temp_gene.bed2 ${PATH_PROG}/annotation/dm3/gene.sizes ${PREFIX1}.gene.cov ${FACTOR}
 		awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1}_temp_gene.bed2 > ${PREFIX1}_temp_gene.transform.bed2
-		echo0 2 "    run get_bed2_summary......"
+		echo0 2 "....run get_bed2_summary"
 		get_bed2_summary ${PREFIX1}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX1} ${FACTOR} ${CPU} gene
-		echo0 2 "    transform gene id to gene name......"
+		echo0 2 "....transform gene id to gene name"
 		transform_id_to_name.R ${PREFIX1}.gene ${PATH_PROG}/annotation/dm3/gene.map
-		echo0 2 "    merge summary files......"
+		echo0 2 "....merge summary files"
 		merged_bed2_summary.R ${PREFIX1}.gene
 	fi
 	
@@ -120,22 +120,22 @@ do
 		#calculate normlization factor
 		echo0 2 "calculate normalization factor for treatment file......"
 		FACTOR=(`awk '{sum+=$4/$5} END{print sum/1000000}' ${HAIRPIN}`)
-		echo0 3 "    normalization factor: "$FACTOR
+		echo0 3 "....normalization factor: "$FACTOR
 		#get summary for picluster reads
 		echo0 2 "begin summarize picluster for treatment sample......"
-		echo0 2 "    run get_bed2_summary......"
+		echo0 2 "....run get_bed2_summary"
 		get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2} ${FACTOR} ${CPU} picluster
-		echo0 2 "  calculate signal for each position......"
+		echo0 2 "....calculate signal for each position"
 		bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2}.picluster.cov ${FACTOR}
-		echo0 2 "    merge summary files......"
+		echo0 2 "....merge summary files"
 		merged_bed2_summary.R ${PREFIX2}.picluster
 		#get summary for transposon reads
 		echo0 2 "begin summarize transposon for treatment sample......"
-		echo0 2 "    run get_bed2_summary......"
+		echo0 2 "....run get_bed2_summary"
 		get_bed2_summary ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX2} ${FACTOR} ${CPU} transposon
-		echo0 2 "    calculate signal for each position......"
+		echo0 2 "....calculate signal for each position"
 		bed2_bucket ${TRANSPOSON} ${PATH_PROG}/annotation/dm3/transposon.sizes ${PREFIX2}.transposon.cov ${FACTOR}
-		echo0 2 "    merge summary files......"
+		echo0 2 "....merge summary files"
 		merged_bed2_summary.R ${PREFIX2}.transposon
 		#get summary for gene reads
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
@@ -143,14 +143,14 @@ do
 			GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
 			awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX2}.temp.gene.bed2 && GF=${PREFIX2}.temp.gene.bed2 
 			bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
-			echo0 2 "    calculate signal for each position......"
+			echo0 2 "....calculate signal for each position"
 			bed2_bucket ${PREFIX2}_temp_gene.bed2 ${PATH_PROG}/annotation/dm3/gene.sizes ${PREFIX2}.gene.cov ${FACTOR}
 			awk 'BEGIN{FS=OFS="\t"} {if(NR==FNR){a[$2]=$1}else{$1=a[$1];print $0}}' ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2}_temp_gene.bed2 > ${PREFIX2}_temp_gene.transform.bed2
-			echo0 2 "    run get_bed2_summary......"
+			echo0 2 "....run get_bed2_summary"
 			get_bed2_summary ${PREFIX2}_temp_gene.transform.bed2 ${PATH_PROG}/annotation/dm3/gene.map ${PREFIX2} ${FACTOR} ${CPU} gene
-			echo0 2 "    transform gene id to gene name......"
+			echo0 2 "....transform gene id to gene name"
 			transform_id_to_name.R ${PREFIX2}.gene ${PATH_PROG}/annotation/dm3/gene.map
-			echo0 2 "    merge summary files......"
+			echo0 2 "....merge summary files"
 			merged_bed2_summary.R ${PREFIX2}.gene
 		fi
 	fi
