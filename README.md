@@ -14,8 +14,8 @@ After this, simple use `run_bed2_summary` to generate the summary of piPipes or 
     miRNA: normalized to reads per million mapped miRNA reads  
     uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
 5. -t treatment sample name with directory. If set, *bed2_summary* can make comparison between control and treatment
-6. -G whether doing analysis genes.  
-    analysis for genes may take more than 1 hour and the figure pdf for genes is very large.
+6. -G whether doing analysis genes. default: not analyze  
+    analysis for genes may take about 2 hour if 11 CPU is set and the figure pdf for genes is very large.
 7. -p CPU numbers used in *bed2_summary*
 ***
 ## output
