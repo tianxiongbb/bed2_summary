@@ -247,7 +247,26 @@ if(length(Args)==6){
 	parLapply(cl,rn,fun_plot_single_mode)
 	# merge pdfs
 	system("echo0 2 \"merge pdfs......\"")
-	system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads ",Args[6]," -sOutputFile=",pre,".",appendix,".pdf ",pre,".",appendix,".temp.head.pdf ",pre,".",appendix,".temp.body.*.pdf && rm ",pre,".",appendix,".temp.*.pdf",sep=""))
+	if(length(rn)>2000){
+		fun_merge=function(in_pdfs){
+			system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,".",appendix,".pdf ",pre,".",appendix,".temp.head.pdf",in_pdfs,sep=""))
+		}
+		system(paste("mkdir ",pre,".",appendix,".pdf",sep=""))
+		trn=sort(rn)
+		l_in_pdfs=c()
+		for(i in 1:ceiling(length(trn)/2000)){
+			tlist=trn[((i-1)*2000+1):min(i*2000,length(trn))]
+			in_pdfs=paste(pre,".",appendix,".pdf/",trn[((i-1)*2000+1)],"---",trn[min(i*2000,length(trn))],".pdf ",pre,".",appendix,".temp.head.pdf",sep="")
+			for(i in tlist){
+				in_pdfs=paste(in_pdfs," ",pre,".",appendix,".temp.body.",i,".pdf",sep="")
+			}
+			l_in_pdfs=c(l_in_pdfs,in_pdfs)
+		}
+		parLapply(cl,l_in_pdfs,fun_merge)
+		system(paste("rm ",pre,".",appendix,".temp.*.pdf",sep=""))
+	}else{
+		system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,"_vs_",sn2,".",appendix,".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf ",pre,"_vs_",sn2,".",appendix,".temp.body.*.pdf && rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
+	}
 }else{
 	# comparison mode
 	pre=paste(strsplit(Args[7],".",fixed=T)[[1]][1:(length(strsplit(Args[7],".",fixed=T)[[1]])-2)],collapse=".")
@@ -327,10 +346,30 @@ if(length(Args)==6){
 	dev.off()
 	# plot buckets for each genes parallely
 	cl=makeCluster(as.numeric(Args[6]))
-	clusterExport(cl=cl,varlist=c("sn1","sn2","uniq_reads_sense_lendis1","uniq_reads_anti_lendis1","uniq_species_sense_lendis1","uniq_species_anti_lendis1","all_reads_sense_lendis1","all_reads_anti_lendis1","all_species_sense_lendis1","all_species_anti_lendis1","pp1","cov1","uniq_reads_sense_lendis2","uniq_reads_anti_lendis2","uniq_species_sense_lendis2","uniq_species_anti_lendis2","all_reads_sense_lendis2","all_reads_anti_lendis2","all_species_sense_lendis2","all_species_anti_lendis2","pp2","cov2","fun_plot_pp2","fun_plot_lendis2","fun_plot_bucket2","pre","appendix"),envir=environment())
+	clusterExport(cl=cl,varlist=c("sn1","sn2","uniq_reads_sense_lendis1","uniq_reads_anti_lendis1","uniq_species_sense_lendis1","uniq_species_anti_lendis1","all_reads_sense_lendis1","all_reads_anti_lendis1","all_species_sense_lendis1","all_species_anti_lendis1","pp1","cov1","uniq_reads_sense_lendis2","uniq_reads_anti_lendis2","uniq_species_sense_lendis2","uniq_species_anti_lendis2","all_reads_sense_lendis2","all_reads_anti_lendis2","all_species_sense_lendis2","all_species_anti_lendis2","pp2","cov2","fun_plot_pp2","fun_plot_lendis2","fun_plot_bucket2","pre","appendix","Args"),envir=environment())
 	parLapply(cl,rn,fun_plot_comparison_mode)
 	# merge pdfs
-	system("echo0 2 \"merge pdfs......\"")
-	system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads ",Args[6]," -sOutputFile=",pre,"_vs_",sn2,".",appendix,".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf ",pre,"_vs_",sn2,".",appendix,".temp.body.*.pdf && rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
+	system("echo0 2 \"    merge pdfs......\"")
+	if(length(rn)>2000){
+		fun_merge=function(in_pdfs){
+			system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",in_pdfs,sep=""))
+		}
+		system(paste("mkdir ",pre,"_vs_",sn2,".",appendix,".pdf",sep=""))
+		trn=sort(rn)
+		l_in_pdfs=c()
+		for(i in 1:ceiling(length(trn)/2000)){
+			tlist=trn[((i-1)*2000+1):min(i*2000,length(trn))]
+			in_pdfs=paste(pre,"_vs_",sn2,".",appendix,".pdf/",trn[((i-1)*2000+1)],"---",trn[min(i*2000,length(trn))],".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf",sep="")
+			for(i in tlist){
+				in_pdfs=paste(in_pdfs," ",pre,"_vs_",sn2,".",appendix,".temp.body.",i,".pdf",sep="")
+			}
+			l_in_pdfs=c(l_in_pdfs,in_pdfs)
+		}	
+		parLapply(cl,l_in_pdfs,fun_merge)
+		system(paste("rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
+	}else{
+		system("echo0 2 \"    merge pdfs......\"")
+		system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,"_vs_",sn2,".",appendix,".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf ",pre,"_vs_",sn2,".",appendix,".temp.body.*.pdf && rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
+	}
 }
 stopCluster(cl)
