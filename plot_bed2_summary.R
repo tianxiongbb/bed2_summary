@@ -101,7 +101,11 @@ fun_plot_scatter2=function(x, y, n1, n2, m){
 	if(length(cl)<2000){
 		points(i1,i2,pch=21,col="white",bg=cl)
 	}else{
-		points(i1,i2,pch=20,col=cl,cex=0.7)
+		points(i1,i2,pch=20,col=cl,cex=0.5)
+	}
+	if(length(imp_pi_dm3)==2){
+		points(i1[imp_pi_dm3],i2[imp_pi_dm3],pch=1,cex=1.1)
+		text(i1[imp_pi_dm3],i2[imp_pi_dm3],label=c("42AB","flam"),pos=1,font=2)
 	}
 	pv=signif(wilcox.test(i1,i2,paired=T)$p.value,2)
 	text(0,max(i1,i2)*9/10,pos=4,label=paste("p-value = ",pv,sep=""),font=2)
@@ -120,7 +124,11 @@ fun_plot_scatter2_for_pp=function(x, y, n1, n2){
 	if(length(cl)<2000){
 		points(i1,i2,pch=21,col="white",bg=cl)
 	}else{
-		points(i1,i2,pch=20,col=cl,cex=0.7)
+		points(i1,i2,pch=20,col=cl,cex=0.5)
+	}
+	if(length(imp_pi_dm3)==2){
+		points(i1[imp_pi_dm3],i2[imp_pi_dm3],pch=1,cex=1.1)
+		text(i1[imp_pi_dm3],i2[imp_pi_dm3],label=c("42AB","flam"),pos=1,font=2)
 	}
 	pv=signif(wilcox.test(i1,i2,paired=T)$p.value,2)
 	text(0,max(i1,i2)*9/10,pos=4,label=paste("p-value = ",pv,sep=""),font=2)
@@ -230,6 +238,7 @@ if(length(Args)==6){
 	cov=read.table(paste(Args[7],".cov",sep=""),header=F,row.names=NULL,check.names=F)
 	summary1=read.table(paste(Args[7],".summary",sep=""),header=T,row.names=1)
 	rn=row.names(summary1)
+	imp_pi_dm3=c(which(rn=="42AB"),which(rn=="flam"))
 	# plot
 	pdf(paste(pre,".",appendix,".temp.head.pdf", sep=""), width=21, height=5*7/13, useDingbats=F)
 	# plot overall summary first
@@ -311,6 +320,7 @@ if(length(Args)==6){
 	cov2=read.table(paste(Args[8],".cov",sep=""),header=F,row.names=NULL,check.names=F)
 	summary2=read.table(paste(Args[8],".summary",sep=""),header=T,row.names=1)
 	rn=row.names(summary1)
+	imp_pi_dm3=c(which(rn=="42AB"),which(rn=="flam"))
 	# plot
 	# add scatterplot for comparing sample1 and sample2
 	pdf(paste(pre,"_vs_",sn2,".",appendix,".scatter.pdf", sep=""), width=14, height=6, useDingbats=F)
