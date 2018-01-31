@@ -382,7 +382,7 @@ if(length(Args)==6){
 			l_in_pdfs=c(l_in_pdfs,in_pdfs)
 		}
 		parLapply(cl,l_in_pdfs,fun_merge)
-		#system(paste("rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
+		system(paste("rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
 	}else{
 		system(paste("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dNumRenderingThreads=",Args[6]," -sOutputFile=",pre,"_vs_",sn2,".",appendix,".pdf ",pre,"_vs_",sn2,".",appendix,".temp.head.pdf ",pre,"_vs_",sn2,".",appendix,".temp.body.*.pdf && rm ",pre,"_vs_",sn2,".",appendix,".temp.*.pdf",sep=""))
 	}
