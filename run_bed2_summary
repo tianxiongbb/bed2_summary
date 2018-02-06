@@ -55,14 +55,14 @@ do
 	IN_SAMPLE=`basename ${IN1}`
 	OUTDIR=${OUTDIR%\/}
 	PREFIX1=${OUTDIR}/${IN_SAMPLE}.${size}nt
-	PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a1.insert.bed2`
+	PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a*.insert.bed2`
 	awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${PIRNA} > ${PREFIX1}.temp.piRNA.bed2 && PIRNA=${PREFIX1}.temp.piRNA.bed2 
-	TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a1.insert.bed2`
+	TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a*.insert.bed2`
 	awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${TRANSPOSON} > ${PREFIX1}.temp.transposon.bed2 && TRANSPOSON=${PREFIX1}.temp.transposon.bed2
 	if [ "$n" == "miRNA" ];then
-		HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v1m1.bed2`
+		HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v*m*.bed2`
 	else
-		HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.unique.bed2`
+		HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.${GENOME}v*.unique.bed2`
 	fi
 	#calculate normlization factor
 	echo0 2 "calculate normalization factor for control sample......"
@@ -87,7 +87,7 @@ do
 	#get summary for gene reads
 	if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 		echo0 2 "begin summarize gene for control sample......"
-		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
+		GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.${GENOME}v*.all.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX1}.temp.gene.bed2 && GF=${PREFIX1}.temp.gene.bed2 
 		echo0 2 "....intersect with gene.bed12"
 		bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX1}_temp_gene.bed2 
@@ -108,14 +108,14 @@ do
 		IN_SAMPLE=`basename ${IN2}`
 		OUTDIR=${OUTDIR%\/}
 		PREFIX2=${OUTDIR}/${IN_SAMPLE}.${size}nt
-		PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a1.insert.bed2`
+		PIRNA=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.piRNAcluster.a*.insert.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${PIRNA} > ${PREFIX2}.temp.piRNA.bed2 && PIRNA=${PREFIX2}.temp.piRNA.bed2 
-		TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a1.insert.bed2`
+		TRANSPOSON=`readlink -f ${IN_DIR}/transposon_piRNAcluster_mapping_normalized_by*/${IN_SAMPLE}.x_rRNA.transposon.a*.insert.bed2`
 		awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${TRANSPOSON} > ${PREFIX2}.temp.transposon.bed2 && TRANSPOSON=${PREFIX2}.temp.transposon.bed2
 		if [ "$n" == "miRNA" ];then
-			HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v1m1.bed2`
+			HAIRPIN=`readlink -f ${IN_DIR}/hairpins_mapping/${IN_SAMPLE}.x_rRNA.hairpin.v*m*.bed2`
 		else
-			HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.unique.bed2`
+			HAIRPIN=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.${GENOME}v*.unique.bed2`
 		fi
 		#calculate normlization factor
 		echo0 2 "calculate normalization factor for treatment file......"
@@ -140,7 +140,7 @@ do
 		#get summary for gene reads
 		if [ "$GENE" == "yes" -o "$GENE" == "1" ];then
 			echo0 2 "begin summarize gene for treatment sample......"
-			GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.dm3v1.all.bed2`
+			GF=`readlink -f ${IN_DIR}/genome_mapping/${IN_SAMPLE}.x_rRNA.x_hairpin.${GENOME}v*.all.bed2`
 			awk -v sz=$size 'BEGIN{FS=OFS="\t";split(sz,szsp,"-");l=szsp[1];r=szsp[2]} {if(($3-$2)>=l && ($3-$2)<=r){print $0}}' ${GF} > ${PREFIX2}.temp.gene.bed2 && GF=${PREFIX2}.temp.gene.bed2 
 			bedtools intersect -split -nonamecheck -a ${GF} -b ${PATH_PROG}/annotation/dm3/gene.bed12 -wo -f 1 | awk 'BEGIN{FS=OFS="\t"} {gn=$11;if($6==$13){strand="+";s=$2-$9;e=$3-$9}else{strand="-";s=$10-$3;e=$10-$2};print gn,s,e,$4,$5,strand,$7}' > ${PREFIX2}_temp_gene.bed2 
 			echo0 2 "....calculate signal for each position"
