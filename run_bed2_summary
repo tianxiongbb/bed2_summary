@@ -6,7 +6,7 @@ echo -e "\033[40;33;1m"
 cat << EOF
 Author: Tianxiong (Bear) Yu
 usage:
-run_bed2_summary -c control.prefix -o out.prefix -g genome -n [miRNA|uniq] [-t treat.prefix] [-p CPU] [-G [0|1|yes|no]]
+run_bed2_summary -c control.prefix -o out.prefix -g genome -n [miRNA|uniq] [-t treat.prefix] [-p CPU] [-G]
 
 Parameters:
     -t,-c path_to_piPipes_result/sample_name, eg: /results/piPipes/condition
