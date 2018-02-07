@@ -5,7 +5,7 @@ get smallRNAseq summary in piclusters, transposons and genes from bed2 files gen
 For easy install, run install.sh in *bed2_summary* folder after download and unzip the source code. It will add all the scripts needed into your PATH and PYTHONPATH. After installation, please use `source ~/.bashrc` or re-load the server.
 After this, simple use `run_bed2_summary` to generate the summary of piPipes or mapping result.
 ***
-## input
+## usage
 *bed2_summary* need at least 4 input (first 4 parameters is required, others is optional):
 1. -c control sample name with directory. Use without -t will only give out plots for control sample. eg: path_to_piPipes_result/sample_name_control
 2. -o output directory. All the output files will be in this folder including bucket plots and summary. eg: results/piPipes/bed2_summary/
@@ -17,6 +17,16 @@ After this, simple use `run_bed2_summary` to generate the summary of piPipes or 
 6. -G whether doing analysis genes. default: not analyze  
     analysis for genes may take about 2 hour if 11 CPU is set and the figure pdf for genes is very large.
 7. -p CPU numbers used in *bed2_summary*
+
+tips:  
+In *bed2_summary*, the input need to be **piPipes_output_folder/sample_name**.  
+For example: To say if you used `piPipes small -i oreR_unox.cutadapt.fq.gz -o /project/common/piPipe.result/`, then the follow command is needed for bed2_summary:  
+`run_bed2_summary -c  /project/common/piPipe.result/oreR_unox.cutadapt.fq.gz -o [which output folder you want to put the figures and summaries] -g dm3 -n [miRNA or uniq] [-G if you want to include gene analysis]`
+Also, if you want to compare two conditions, like if you have ran piPipes for two conditions:  
+`piPipes small -i oreR_unox.cutadapt.fq.gz -o /project/common/piPipe.result/`  
+`piPipes small -i rhino_KO_unox.cutadapt.fq.gz -o /project/common/piPipe.result/`  
+Then you can run:  
+`run_bed2_summary -c  /project/common/piPipe.result/oreR_unox.cutadapt.fq.gz -t  /project/common/piPipe.result/rhino_KO_unox.cutadapt.fq.gz -o [which output folder you want to put the figures and summaries] -g dm3 -n [miRNA or uniq] [-G if you want to include gene analysis]`  
 ***
 ## output
 *bed2_summary* can give three summary files: `prefix.picluster.summary`, `prefix.transposon.summary` and `prefix.gene.summary` which summarize informations for each picluster, transposon or gene in each row. And there are 10 columns in xxx.summary:
