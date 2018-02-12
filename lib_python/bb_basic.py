@@ -9,6 +9,17 @@ import sys
 ##############################
 #####print message by format##
 ##############################
+def fun_convert_dnaseq(seq):
+    """convert DNA sequence to complementary sequence"""
+    d = {"A":"T","T":"A","C":"G","G":"C","a":"t","t":"a","c":"g","g":"c"}
+    cseq = ""
+    for i in range(len(seq)):
+        try:
+            cseq += d[seq[i]]
+        except KeyError:
+            cseq += seq[i]
+    return cseq
+
 
 def fun_print_help(*args):
     """print a simple help information. eg: fun_print_help("a.bed", "b.bed")"""
