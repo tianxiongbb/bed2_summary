@@ -28,7 +28,7 @@ do
 	echo -e "bed2_lendis $i ${FACTOR} > ${PATH_LENDIS}/${n}.lendis" >> ${PARA_FILE1}
 	echo -e "bed2_pingpong -a $i -b $i | awk -v factor=${FACTOR_PP} 'BEGIN{FS=OFS=\"\\\t\"} {print \$1,\$2/factor}' > ${PATH_PP}/${n}.pp" >> ${PARA_FILE2}
 	echo -e "awk -v factor=$FACTOR 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1+=\$4/\$5}else if(\$6==\"-\" && \$5==1){sum2+=\$4/\$5};if(\$6==\"+\"){sum3+=\$4/\$5}else{sum4+=\$4/\$5}} END{print sum1/factor,sum2/factor,sum3/factor,sum4/factor}' $i > ${PATH_SIGNAL}/${n}.rpm" >> ${PARA_FILE3}
-	echo -e "awk 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1++}else if(\$6==\"-\" && \$5==1){sum2++};if(\$6==\"+\"){sum3++}else{sum4++}} END{print sum1/1,sum2/1,sum3/1,sum4/1}' $i > ${PATH_SIGNAL}/${n}.species" >> ${PARA_FILE4}
+	echo -e "awk 'BEGIN{FS=OFS=\"\\\t\"} {if(\$6==\"+\" && \$5==1){sum1++}else if(\$6==\"-\" && \$5==1){sum2++};if(\$6==\"+\"){sum3+=1/$5}else{sum4+=1/$5}} END{print sum1/1,sum2/1,sum3/1,sum4/1}' $i > ${PATH_SIGNAL}/${n}.species" >> ${PARA_FILE4}
 done
 echo0 1 "........calculate lendis"
 ParaFly -c ${PARA_FILE1} -CPU ${CPU} > /dev/null && rm ${PARA_FILE1}

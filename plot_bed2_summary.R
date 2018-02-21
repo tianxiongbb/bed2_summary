@@ -91,17 +91,18 @@ fun_plot_bucket2=function(x, y){
 }
 fun_plot_scatter2=function(x, y, n1, n2, m){
 	par(mar=c(4,4,4,2))
+	lb=expression(10^0,10^1,10^2,10^3,10^4,10^5)
 	cl=rep("black",length(x))
 	cl[which((x+1)/(y+1)>2)]="#377eb8"
 	cl[which((x+1)/(y+1)<1/2)]="#e41a1c"
 	i1=log10(x+1); i2=log10(y+1)
-	plot(-100,xlim=c(0,max(i1,i2)),ylim=c(0,max(i1,i2)),main=m,
-	     xlab=paste("log10( ",n1," + 1 )",sep=""),ylab=paste("log10( ",n2," + 1 )",sep=""))
+	plot(-100,xlim=c(0,max(i1,i2)),ylim=c(0,max(i1,i2)),main=m,xaxt="n",yaxt="n",
+	     xlab=paste(n1," + 1",sep=""),ylab=paste(n2," + 1",sep=""))
 	abline(0,1); abline(log10(2),1,lty=2); abline(-log10(2),1,lty=2)
 	if(length(cl)<2000){
 		points(i1,i2,pch=21,col="white",bg=cl)
 	}else{
-		points(i1,i2,pch=20,col=cl,cex=0.5)
+		points(i1,i2,pch=20,col=cl,cex=0.3)
 	}
 	if(length(imp_pi_dm3)==2){
 		points(i1[imp_pi_dm3],i2[imp_pi_dm3],pch=1,cex=1.1)
@@ -109,6 +110,8 @@ fun_plot_scatter2=function(x, y, n1, n2, m){
 	}
 	pv=signif(wilcox.test(i1,i2,paired=T)$p.value,2)
 	text(0,max(i1,i2)*9/10,pos=4,label=paste("p-value = ",pv,sep=""),font=2)
+	axis(1,0:5,label=lb)
+	axis(2,0:5,label=lb)
 }
 fun_plot_scatter2_for_pp=function(x, y, n1, n2){
 	x=x[,9]; y=y[,9]
@@ -135,10 +138,12 @@ fun_plot_scatter2_for_pp=function(x, y, n1, n2){
 }
 fun_plot_scatter2_for_entropy=function(x, y, n1, n2){
 	par(mar=c(4,4,4,2),bty="n")
+	lb=expression(10^0,10^1,10^2,10^3,10^4,10^5)
 	boxplot(log10(x[,1]+1),log10(y[,1]+1),log10(x[,2]+1),log10(y[,2]+1),at=c(1,2,4,5),staplewex=0,lty=1,
 		col=c("#e41a1c","white","#377eb8","white"),border=c("black","#e41a1c","black","#377eb8"),
-		ylab="log10 ( RPM + 1 )",xaxt="n",main="uniqMappers")
+		ylab="RPM + 1",xaxt="n",main="uniqMappers",yaxt="n")
 	axis(1,at=c(1.5,4.5),label=c("sense","antisense"),lwd=0)
+	axis(2,0:5,label=lb)
 	pv1=signif(wilcox.test(x[,1],y[,1],paired=T)$p.value,2)
 	pv2=signif(wilcox.test(x[,2],y[,2],paired=T)$p.value,2)
 	text(c(1.5,4.5),c(max(c(log10(x[,1]+1)),c(log10(y[,1]+1)))*8.5/10,
@@ -151,6 +156,7 @@ fun_plot_scatter2_for_entropy=function(x, y, n1, n2){
 	pv2=signif(wilcox.test(x[,4],y[,4],paired=T)$p.value,2)
 	text(c(1.5,4.5),c(max(c(log10(x[,3]+1)),c(log10(y[,3]+1)))*8.5/10,
 			  max(c(log10(x[,4]+1)),c(log10(y[,4]+1)))*8.5/10),label=c(pv1,pv2),srt=90)
+	par(xpd=T)
 	plot.new()
 	legend("center",fill=c("black","white"),legend=c(n1,n2),y.intersp=1.5)
 }
@@ -351,7 +357,7 @@ if(length(Args)==6){
 	for(i in 6:8){laymat[8:10,i]=i*4-8}
 	for(i in 6:8){laymat[11:13,i]=i*4-7}
 	layout(laymat)
-	par(cex=0.5,tcl=0.3)
+	par(cex=0.5,tcl=0.3,xpd=F)
 	par(mar=c(0,0,0,0),cex=1)
 	plot.new()
 	text(0,0.5,label="overall summary",font=2,cex=1,pos=4)

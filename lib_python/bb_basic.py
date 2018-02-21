@@ -9,10 +9,11 @@ import sys
 ##############################
 #####print message by format##
 ##############################
-def fun_convert_dnaseq(seq):
-    """convert DNA sequence to complementary sequence"""
+def fun_invert_dnaseq(seq):
+    """invert DNA sequence to complementary sequence"""
     d = {"A":"T","T":"A","C":"G","G":"C","a":"t","t":"a","c":"g","g":"c"}
     cseq = ""
+    #for i in range(len(seq)-1,-1,-1):
     for i in range(len(seq)):
         try:
             cseq += d[seq[i]]
