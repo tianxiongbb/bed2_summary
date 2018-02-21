@@ -15,9 +15,9 @@ After this, simple use `run_bed2_summary` to generate the summary of piPipes or 
     uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
 5. -t treatment sample name with directory. If set, *bed2_summary* can make comparison between control and treatment
 6. -G how deep you want to analysis genes. default: 1  
-    0.) not analysis
-    1.) get normalized srna reads number and species for each gene
-    2.) also get buckets for each genes. It may takes more than 2 hour and the buckets pdf size may be more than 200M
+    0.) not analysis  
+    1.) get normalized srna reads number and species for each gene  
+    2.) also get buckets for each genes. It may takes more than 2 hour and the buckets pdf size may be more than 200M  
 7. -p CPU numbers used in *bed2_summary*
 
 tips:  
