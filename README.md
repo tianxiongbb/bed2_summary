@@ -10,12 +10,14 @@ After this, simple use `run_bed2_summary` to generate the summary of piPipes or 
 1. -c control sample name with directory. Use without -t will only give out plots for control sample. eg: path_to_piPipes_result/sample_name_control
 2. -o output directory. All the output files will be in this folder including bucket plots and summary. eg: results/piPipes/bed2_summary/
 3. -g genome used. default: dm3
-4. -n normalization method.  
+4. -n normalization method. default: miRNA 
     miRNA: normalized to reads per million mapped miRNA reads  
     uniq: normalized to reads per million mapped reads exclude miRNA and rRNA reads
 5. -t treatment sample name with directory. If set, *bed2_summary* can make comparison between control and treatment
-6. -G whether doing analysis genes. default: not analyze  
-    analysis for genes may take about 2 hour if 11 CPU is set and the figure pdf for genes is very large.
+6. -G how deep you want to analysis genes. default: 1
+    0) not analysis
+    1) get normalized srna reads number and species for each gene
+    2) also get buckets for each genes. It may takes more than 2 hour and the buckets pdf size may be more than 200M
 7. -p CPU numbers used in *bed2_summary*
 
 tips:  
