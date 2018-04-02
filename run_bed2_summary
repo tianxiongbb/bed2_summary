@@ -200,7 +200,7 @@ do
 		echo0 2 "make bucket plot for transposon......"
 		plot_bed2_summary.R ${CPU} ${PREFIX1}.transposon ${PREFIX2}.transposon
 		if [ $GENE -eq 1 ];then # plot scatterplot for gene rpm and species between two samples
-			a
+			plot_gene_scatter.R ${CPU} ${PREFIX1}.gene ${PREFIX2}.gene
 		fi
 		if [ $GENE -gt 1 ];then
 			echo0 2 "make bucket plot for gene......"
