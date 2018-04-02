@@ -19,7 +19,7 @@ def fun_invert_dnaseq(seq):
             cseq += d[seq[i]]
         except KeyError:
             cseq += seq[i]
-    return cseq
+    return cseq[::-1]
 
 
 def fun_print_help(*args):

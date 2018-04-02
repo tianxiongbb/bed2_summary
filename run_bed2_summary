@@ -93,6 +93,7 @@ do
 	get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1} ${FACTOR} ${CPU} picluster
 	echo0 2 "....calculate signal for each position"
 	bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1}.picluster.cov ${FACTOR}
+	awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);c[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX1}.picluster.cov  > ${PREFIX1}.picluster.chopped.summary
 	echo0 2 "....merge summary files"
 	merged_bed2_summary.R ${PREFIX1}.picluster
 	#get summary for transposon reads
@@ -152,6 +153,7 @@ do
 		get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2} ${FACTOR} ${CPU} picluster
 		echo0 2 "....calculate signal for each position"
 		bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2}.picluster.cov ${FACTOR}
+		awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);c[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX2}.picluster.cov  > ${PREFIX2}.picluster.chopped.summary
 		echo0 2 "....merge summary files"
 		merged_bed2_summary.R ${PREFIX2}.picluster
 		#get summary for transposon reads
@@ -200,12 +202,13 @@ do
 		echo0 2 "make bucket plot for transposon......"
 		plot_bed2_summary.R ${CPU} ${PREFIX1}.transposon ${PREFIX2}.transposon
 		if [ $GENE -eq 1 ];then # plot scatterplot for gene rpm and species between two samples
-			a
+			plot_gene_scatter.R 1 ${PREFIX1}.gene ${PREFIX2}.gene
 		fi
 		if [ $GENE -gt 1 ];then
 			echo0 2 "make bucket plot for gene......"
 			plot_bed2_summary.R ${CPU} ${PREFIX1}.gene ${PREFIX2}.gene
 		fi
+		plot_chopped_scatter.R 1 ${PREFIX1}.picluster.chopped ${PREFIX2}.picluster.chopped
 	fi
 	###remove temp files
 	rm ${PREFIX1}.temp* ${PREFIX2}.temp*
