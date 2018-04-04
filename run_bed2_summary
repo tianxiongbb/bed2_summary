@@ -93,7 +93,7 @@ do
 	get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1} ${FACTOR} ${CPU} picluster
 	echo0 2 "....calculate signal for each position"
 	bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX1}.picluster.cov ${FACTOR}
-	awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);c[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX1}.picluster.cov  > ${PREFIX1}.picluster.chopped.summary
+	awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);d[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX1}.picluster.cov  > ${PREFIX1}.picluster.chopped.summary
 	echo0 2 "....merge summary files"
 	merged_bed2_summary.R ${PREFIX1}.picluster
 	#get summary for transposon reads
@@ -153,7 +153,7 @@ do
 		get_bed2_summary ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2} ${FACTOR} ${CPU} picluster
 		echo0 2 "....calculate signal for each position"
 		bed2_bucket ${PIRNA} ${PATH_PROG}/annotation/dm3/piRNAcluster.sizes ${PREFIX2}.picluster.cov ${FACTOR}
-		awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);c[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX2}.picluster.cov  > ${PREFIX2}.picluster.chopped.summary
+		awk 'BEGIN{FS=OFS="\t"} {a[$1"_"($2%1000)]+=($3);b[$1"_"($2%1000)]+=($5);c[$1"_"($2%1000)]+=(-$4);d[$1"_"($2%1000)]+=(-$6)} END{print "sense_all\tanti_all\tsense_uniq\tanti_uniq";for(i in a){print i,a[i],c[i],b[i],d[i]}}' ${PREFIX2}.picluster.cov  > ${PREFIX2}.picluster.chopped.summary
 		echo0 2 "....merge summary files"
 		merged_bed2_summary.R ${PREFIX2}.picluster
 		#get summary for transposon reads
